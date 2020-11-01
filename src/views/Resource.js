@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const RegisterView = () => {
+const ResourceView = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const organizations = [
@@ -90,12 +90,11 @@ const RegisterView = () => {
               values
             }) => (
               <form onSubmit={handleSubmit}>
-                {/* <Box mb={1}> */}
                   <Typography
                     color="textPrimary"
                     variant="h2"
                   >
-                    ADD PERSON
+                    ADD RESOURCE
                   </Typography>
                 <Grid
                   container
@@ -263,4 +262,4 @@ const RegisterView = () => {
   );
 };
 
-export default RegisterView;
+export default ResourceView;
