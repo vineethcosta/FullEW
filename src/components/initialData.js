@@ -31,14 +31,35 @@ export const types = [
     { 'value': 'vehicle', 'label': 'VEHICLE' },
     { 'value': 'people', 'label': 'PEOPLE' }
 ];
-export const jobs = [
-    { 'value': 'engineer', 'label': 'ENGINEER' },
-    { 'value': 'architect', 'label': 'ARCHITECT' },
-];
-export const resources = [
-
+export const jobtitles = [
+    {
+        value: 'engineer',
+        label: 'engineer'
+    },
+    {
+        value: 'architect',
+        label: 'architect'
+    },
+    {
+        value: 'owner',
+        label: 'owner'
+    }
 ];
 export const organizations = [
+    {
+      value: 'hyderabad',
+      label: 'Hyderabad'
+    },
+    {
+      value: 'bangalore',
+      label: 'Bangalore'
+    },
+    {
+      value: 'mumbai',
+      label: 'Mumbai'
+    }
+  ];
+export const resources = [
 
 ];
 export const persons = [

@@ -3,6 +3,7 @@ import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import * as initialData from '../../components/initialData'
 import {
   Box,
   Button,
@@ -12,7 +13,8 @@ import {
   Grid,
   TextField,
   Typography,
-  makeStyles
+  makeStyles,
+  Select
 } from '@material-ui/core';
 import Page from 'src/components/Page';
 
@@ -28,34 +30,8 @@ const useStyles = makeStyles((theme) => ({
 const AddPersonView = () => {
   const classes = useStyles();
   const navigate = useNavigate();
-  const jobtitles = [
-    {
-        value: 'engineer',
-        label: 'engineer'
-    },
-    {
-        value: 'architect',
-        label: 'architect'
-    },
-    {
-        value: 'owner',
-        label: 'owner'
-    }
-];
-  const organizations = [
-    {
-      value: 'hyderabad',
-      label: 'Hyderabad'
-    },
-    {
-      value: 'bangalore',
-      label: 'Bangalore'
-    },
-    {
-      value: 'mumbai',
-      label: 'Mumbai'
-    }
-  ];
+  const jobtitles = initialData.jobtitles;
+  const organizations = initialData.organizations;
   return (
     <Page
       className={classes.root}
@@ -77,7 +53,7 @@ const AddPersonView = () => {
               phone: '',
               address: '',
               organization: '',
-              jobtitle: ''
+              jobTitle: ''
             }}
             validationSchema={
               Yup.object().shape({
@@ -88,11 +64,25 @@ const AddPersonView = () => {
                 phone: Yup.string().max(255).required('Phone Number is required'),
                 address: Yup.string().max(255).required('Address is required'),
                 policy: Yup.boolean().oneOf([true], 'This field must be checked'),
-                jobtitle: Yup.boolean().oneOf([true], 'Job Title is required')
+                organization: Yup.string().max(255).required('Address is required'),
+                jobTitle: Yup.string().max(255).required('Address is required'),
               })
             }
-            onSubmit={() => {
-              navigate('/app/dashboard', { replace: true });
+            onSubmit = {(values, {setSubmitting, resetForm}) => {
+              setTimeout(() => {
+                fetch('http://localhost:5000/addPerson', {
+                  method: 'POST',
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({values})
+                })
+                .then(() => {
+                  alert("Person Successfully Added");
+                  setSubmitting(false);
+                  resetForm({})
+                })
+                .catch(() => alert("There was a error, Please try again"))
+              }, 1000);
+                // navigate('/app/dashboard', { replace: true });
             }}
           >
             {({
@@ -100,6 +90,7 @@ const AddPersonView = () => {
               handleBlur,
               handleChange,
               handleSubmit,
+              handleReset,
               isSubmitting,
               touched,
               values
@@ -211,16 +202,16 @@ const AddPersonView = () => {
 
                 <TextField
                   fullWidth
-                  label="Select Job Title"
-                  name="jobtitle"
+                  name="jobTitle"
                   onChange={handleChange}
                   required
                   select
                   SelectProps={{ native: true}}
-                  value={values.jobtitle}
+                  value={values.jobTitle}
                   variant="outlined"
                   margin = "normal"
                 >
+                  <option  value= "" label = "select jobtitle"/>
                   {jobtitles.map((option) => (
                     <option
                       key={option.value}
@@ -230,19 +221,23 @@ const AddPersonView = () => {
                     </option>
                   ))}
                 </TextField>
-            
+                    
+                
                 <TextField
                   fullWidth
-                  label="Select Organization"
+                  // label="Select Organization"
                   name="organization"
+                  value={values.organization}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   required
                   select
                   SelectProps={{ native: true}}
-                  value={values.organization}
+                  
                   variant="outlined"
                   margin = "normal"
                 >
+                  <option  value= "" label = "select organization"/>
                   {organizations.map((option) => (
                     <option
                       key={option.value}
@@ -252,6 +247,7 @@ const AddPersonView = () => {
                     </option>
                   ))}
                 </TextField>
+
                 <TextField
                   multiline
                   rows = {3}
@@ -260,7 +256,7 @@ const AddPersonView = () => {
                   helperText={touched.address && errors.address}
                   label="Address"
                   margin="normal"
-                  name="Address"
+                  name="address"
                   onBlur={handleBlur}
                   onChange={handleChange}
                   value={values.address}
