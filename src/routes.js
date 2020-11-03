@@ -9,8 +9,11 @@ import LoginView from 'src/views/auth/LoginView';
 import NotFoundView from 'src/views/errors/NotFoundView';
 import ProductListView from 'src/views/product/ProductListView';
 import RegisterView from 'src/views/auth/RegisterView';
+import AddPersonView from 'src/views/InventoryView/AddPersonView';
+import AddResourceView from 'src/views/InventoryView/AddResourceView';
+import InwardView from 'src/views/InventoryView/InwardView';
+import OutwardView from 'src/views/InventoryView/OutwardView';
 import SettingsView from 'src/views/settings/SettingsView';
-import ResourceView from 'src/views/Resource';
 
 const routes = [
   {
@@ -22,8 +25,11 @@ const routes = [
       { path: 'dashboard', element: <DashboardView /> },
       { path: 'products', element: <ProductListView /> },
       { path: 'settings', element: <SettingsView /> },
-      { path: 'addPerson', element: <RegisterView /> },
-      { path: 'addResource', element: <ResourceView /> },
+      { path: 'register', element: <RegisterView /> },
+      { path: 'addPerson', element: <AddPersonView /> },
+      { path: 'addResource', element: <AddResourceView /> },
+      { path: 'addInward', element: <InwardView /> },
+      { path: 'addOutward', element: <OutwardView /> },
       { path: '*', element: <Navigate to="/404" /> }
     ]
   },

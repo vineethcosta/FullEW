@@ -33,9 +33,29 @@ const items = [
     title: 'Dashboard'
   },
   {
+    href: '/app/addPerson',
+    icon: UserPlusIcon,
+    title: 'ADD PERSON'
+  },
+  {
+    href: '/app/addResource',
+    icon: ShoppingBagIcon,
+    title: 'ADD RESOURCE'
+  },
+  {
+    href: '/app/addInward',
+    icon: ShoppingBagIcon,
+    title: 'ADD INWARD'
+  },
+  {
+    href: '/app/addOutward',
+    icon: ShoppingBagIcon,
+    title: 'ADD OUTWARD'
+  },
+  {
     href: '/app/customers',
     icon: UsersIcon,
-    title: 'Customers'
+    title: 'RESOURCES'
   },
   {
     href: '/app/products',
@@ -53,19 +73,14 @@ const items = [
     title: 'Settings'
   },
   {
+    href: '/register',
+    icon: LockIcon,
+    title: 'Register'
+  },
+  {
     href: '/login',
     icon: LockIcon,
     title: 'Login'
-  },
-  {
-    href: '/app/addPerson',
-    icon: UserPlusIcon,
-    title: 'ADD PERSON'
-  },
-  {
-    href: '/app/addResource',
-    icon: ShoppingBagIcon,
-    title: 'ADD RESOURCE'
   },
   // {
   //   href: '/404',

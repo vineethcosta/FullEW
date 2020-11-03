@@ -3,6 +3,7 @@ import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import * as initialData from '../../components/initialData'
 import {
   Box,
   Button,
@@ -25,23 +26,15 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const ResourceView = () => {
+const AddResourceView = () => {
   const classes = useStyles();
   const navigate = useNavigate();
-  const organizations = [
-    {
-      value: 'hyderabad',
-      label: 'Hyderabad'
-    },
-    {
-      value: 'bangalore',
-      label: 'Bangalore'
-    },
-    {
-      value: 'mumbai',
-      label: 'Mumbai'
-    }
-  ];
+  const types = initialData.types
+  const units = initialData.units
+  const owners = [
+    { 'value': 'dummy1', 'label': 'DUMMY1' },
+    { 'value': 'dummy2', 'label': 'DUMMY2' },
+];
   return (
     <Page
       className={classes.root}
@@ -56,24 +49,25 @@ const ResourceView = () => {
         <Container maxWidth="sm">
           <Formik
             initialValues={{
-              email: '',
-              firstName: '',
-              lastName: '',
+              fullName: '',
+              nickName: '',
+              type: '',
+              SKU: '',
+              quantity: '',
+              units: '',
               location: '',
-              phone: '',
-              address: '',
-              organization: '',
-              policy: false
+              owner:''
             }}
             validationSchema={
               Yup.object().shape({
-                email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
-                firstName: Yup.string().max(255).required('First name is required'),
-                lastName: Yup.string().max(255).required('Last name is required'),
+                fullName: Yup.string().max(255).required('Full name is required'),
+                nickName: Yup.string().max(255).required('Nick name is required'),
+                type: Yup.string().max(255).required('Type is required'),
+                SKU: Yup.string().max(255).required('SKU is required'),
+                quantity: Yup.string().max(255).required('Quantity is required'),
+                units: Yup.string().max(255).required('Units is required'),
                 location: Yup.string().max(255).required('Location is required'),
-                phone: Yup.string().max(255).required('Phone Number is required'),
-                address: Yup.string().max(255).required('Address is required'),
-                policy: Yup.boolean().oneOf([true], 'This field must be checked')
+                owner: Yup.string().max(255).required('Owner is required')
               })
             }
             onSubmit={() => {
@@ -90,12 +84,64 @@ const ResourceView = () => {
               values
             }) => (
               <form onSubmit={handleSubmit}>
+                {/* <Box mb={1}> */}
                   <Typography
                     color="textPrimary"
                     variant="h2"
                   >
                     ADD RESOURCE
                   </Typography>
+                  <Grid
+                  container
+                  spacing={3}
+                >
+                <Grid
+                    item
+                    md={8}
+                    xs={12}
+                  >
+              
+                <TextField
+                  fullWidth
+                  label="Select Owner"
+                  name="owner"
+                  onChange={handleChange}
+                  required
+                  select
+                  SelectProps={{ native: true}}
+                  value={values.type}
+                  variant="outlined"
+                  margin = "normal"
+                >
+                  {owners.map((option) => (
+                    <option
+                      key={option.value}
+                      value={option.value}
+                    >
+                      {option.label}
+                    </option>
+                  ))}
+                </TextField>
+                </Grid>
+                <Grid
+                    item
+                    md={4}
+                    xs={12}
+                  >
+                <Box my={2}>
+                  <Button
+                    color="primary"
+                    disabled={isSubmitting}
+                    fullWidth
+                    size="large"
+                    type="submit"
+                    variant="contained"
+                  >
+                    Add Person
+                  </Button>
+                </Box>
+                </Grid>
+                </Grid>
                 <Grid
                   container
                   spacing={3}
@@ -106,12 +152,12 @@ const ResourceView = () => {
                     xs={12}
                   >
                     <TextField
-                      error={Boolean(touched.firstName && errors.firstName)}
+                      error={Boolean(touched.fullName && errors.fullName)}
                       fullWidth
-                      helperText={touched.firstName && errors.firstName}
-                      label="First name"
+                      helperText={touched.fullName && errors.fullName}
+                      label="Full name"
                       margin="normal"
-                      name="firstName"
+                      name="fullName"
                       onBlur={handleBlur}
                       onChange={handleChange}
                       value={values.firstName}
@@ -124,15 +170,15 @@ const ResourceView = () => {
                     xs={12}
                   >
                     <TextField
-                      error={Boolean(touched.lastName && errors.lastName)}
+                      error={Boolean(touched.nickName && errors.nickName)}
                       fullWidth
-                      helperText={touched.lastName && errors.lastName}
-                      label="Last name"
+                      helperText={touched.nickName && errors.nickName}
+                      label="Nick name"
                       margin="normal"
-                      name="lastName"
+                      name="nickName"
                       onBlur={handleBlur}
                       onChange={handleChange}
-                      value={values.lastName}
+                      value={values.nickName}
                       variant="outlined"
                     />
                   </Grid>
@@ -143,42 +189,68 @@ const ResourceView = () => {
                 >
                   <Grid
                     item
-                    md={6}
+                    md={4}
                     xs={12}
                   >
                     <TextField
-                      error={Boolean(touched.email && errors.email)}
+                      error={Boolean(touched.SKU && errors.SKU)}
                       fullWidth
-                      helperText={touched.email && errors.email}
-                      label="Email Address"
+                      helperText={touched.SKU && errors.SKU}
+                      label="SKU"
                       margin="normal"
-                      name="email"
+                      name="SKU"
                       onBlur={handleBlur}
                       onChange={handleChange}
-                      type="email"
-                      value={values.email}
+                      value={values.SKU}
                       variant="outlined"
                     />
                   </Grid>
                   <Grid
                     item
-                    md={6}
+                    md={4}
                     xs={12}
                   >
                     <TextField
-                      error={Boolean(touched.phone && errors.phone)}
+                      error={Boolean(touched.quanitiy && errors.quanitiy)}
                       fullWidth
-                      helperText={touched.phone && errors.phone}
-                      label="Phone Number"
-                      name="phone"
+                      helperText={touched.quanitiy && errors.quanitiy}
+                      label="Quantity"
+                      name="quantity"
                       margin="normal"
                       onBlur={handleBlur}
                       onChange={handleChange}
                       type="number"
-                      value={values.phone}
+                      value={values.quanitiy}
                       variant="outlined"
                     />
                   </Grid>
+                  <Grid
+                    item
+                    md={4}
+                    xs={12}
+                  >
+                        <TextField
+                  fullWidth
+                  label="Units"
+                  name="units"
+                  onChange={handleChange}
+                  required
+                  select
+                  SelectProps={{ native: true}}
+                  value={values.type}
+                  variant="outlined"
+                  margin = "normal"
+                >
+                  {units.map((option) => (
+                    <option
+                      key={option.value}
+                      value={option.value}
+                    >
+                      {option.label}
+                    </option>
+                  ))}
+                </TextField>
+                </Grid>
                 </Grid>
                 <TextField
                   error={Boolean(touched.location && errors.location)}
@@ -192,28 +264,19 @@ const ResourceView = () => {
                   value={values.location}
                   variant="outlined"
                 />
-                <Autocomplete
-                  // {...jobtitleProps}
-                  id="auto-complete"
-                  name = "JobTitle"
-                  autoComplete
-                  includeInputInList
-                  onChange={handleChange}
-                  renderInput={(params) => <TextField {...params} label="Job Title" variant="outlined"  />}
-                />
                 <TextField
                   fullWidth
-                  label="Select Organization"
-                  name="organization"
+                  label="Select Type"
+                  name="type"
                   onChange={handleChange}
                   required
                   select
                   SelectProps={{ native: true}}
-                  value={values.organization}
+                  value={values.type}
                   variant="outlined"
                   margin = "normal"
                 >
-                  {organizations.map((option) => (
+                  {types.map((option) => (
                     <option
                       key={option.value}
                       value={option.value}
@@ -222,25 +285,7 @@ const ResourceView = () => {
                     </option>
                   ))}
                 </TextField>
-                <TextField
-                  multiline
-                  rows = {3}
-                  error={Boolean(touched.address && errors.address)}
-                  fullWidth
-                  helperText={touched.address && errors.address}
-                  label="Address"
-                  margin="normal"
-                  name="Address"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.address}
-                  variant="outlined"
-                />
-                {Boolean(touched.policy && errors.policy) && (
-                  <FormHelperText error>
-                    {errors.policy}
-                  </FormHelperText>
-                )}
+               
                 <Box my={2}>
                   <Button
                     color="primary"
@@ -262,4 +307,4 @@ const ResourceView = () => {
   );
 };
 
-export default ResourceView;
+export default AddResourceView;
