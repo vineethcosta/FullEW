@@ -53,7 +53,7 @@ const items = [
     title: 'ADD OUTWARD'
   },
   {
-    href: '/app/customers',
+    href: '/app/resources',
     icon: UsersIcon,
     title: 'RESOURCES'
   },

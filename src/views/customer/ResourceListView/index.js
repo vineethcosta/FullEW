@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect} from 'react';
 import {
   Box,
   Container,
@@ -7,7 +7,7 @@ import {
 import Page from 'src/components/Page';
 import Results from './Results';
 import Toolbar from './Toolbar';
-import data from './data';
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -18,23 +18,32 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const CustomerListView = () => {
-  const classes = useStyles();
-  const [customers] = useState(data);
 
+const ResourceListView = () => {
+  const classes = useStyles();
+  const [allResources, setAllResources] = useState([]);
+  useEffect(()=>{
+    fetch('http://localhost:5000/getFullResources',{
+    }).then(res=>res.json())
+    .then(result=>{
+        setAllResources(result.resources)
+    })
+  },[])
+
+  
   return (
     <Page
       className={classes.root}
-      title="Customers"
+      title="Resources"
     >
       <Container maxWidth={false}>
         <Toolbar />
         <Box mt={3}>
-          <Results customers={customers} />
+          <Results resources={allResources} />
         </Box>
       </Container>
     </Page>
   );
 };
 
-export default CustomerListView;
+export default ResourceListView;
