@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useState, useEffect} from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
@@ -31,10 +31,18 @@ const AddResourceView = () => {
   const navigate = useNavigate();
   const types = initialData.types
   const units = initialData.units
-  const owners = [
-    { 'value': 'dummy1', 'label': 'DUMMY1' },
-    { 'value': 'dummy2', 'label': 'DUMMY2' },
-];
+  const [allOwners, setAllOwners] = useState([]);
+  useEffect(()=>{
+    fetch('http://localhost:5000/getAllPersons',{
+    }).then(res=>res.json())
+    .then(result=>{
+      var x = []
+        for(var i in result.persons){
+            x.push({"label": result.persons[i].first_name +" " + result.persons[i].last_name})
+        }
+        setAllOwners(x)
+    })
+  },[])
   return (
     <Page
       className={classes.root}
@@ -70,8 +78,20 @@ const AddResourceView = () => {
                 owner: Yup.string().max(255).required('Owner is required')
               })
             }
-            onSubmit={() => {
-              navigate('/app/dashboard', { replace: true });
+            onSubmit = {(values, {setSubmitting, resetForm}) => {
+              setTimeout(() => {
+                fetch('http://localhost:5000/addResource', {
+                  method: 'POST',
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({values})
+                })
+                .then(() => {
+                  alert("Resource Successfully Added");
+                  setSubmitting(false);
+                  resetForm({})
+                })
+                .catch(() => alert("There was a error, Please try again"))
+              }, 1000);
             }}
           >
             {({
@@ -79,6 +99,7 @@ const AddResourceView = () => {
               handleBlur,
               handleChange,
               handleSubmit,
+              handleReset,
               isSubmitting,
               touched,
               values
@@ -103,17 +124,18 @@ const AddResourceView = () => {
               
                 <TextField
                   fullWidth
-                  label="Select Owner"
                   name="owner"
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   required
                   select
                   SelectProps={{ native: true}}
-                  value={values.type}
+                  value={values.owner}
                   variant="outlined"
                   margin = "normal"
                 >
-                  {owners.map((option) => (
+                  <option  value= "" label = "select Owner"/>
+                  {allOwners.map((option) => (
                     <option
                       key={option.value}
                       value={option.value}
@@ -129,16 +151,16 @@ const AddResourceView = () => {
                     xs={12}
                   >
                 <Box my={2}>
-                  <Button
-                    color="primary"
-                    disabled={isSubmitting}
-                    fullWidth
-                    size="large"
-                    type="submit"
-                    variant="contained"
-                  >
-                    Add Person
-                  </Button>
+                  <RouterLink to = "/app/addPerson">
+                    <Button
+                      color="primary"
+                      fullWidth
+                      size="large"
+                      variant="contained"
+                    >
+                      Add Person
+                    </Button>
+                  </RouterLink>
                 </Box>
                 </Grid>
                 </Grid>
@@ -229,18 +251,19 @@ const AddResourceView = () => {
                     md={4}
                     xs={12}
                   >
-                        <TextField
+                  <TextField
                   fullWidth
-                  label="Units"
                   name="units"
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   required
                   select
                   SelectProps={{ native: true}}
-                  value={values.type}
+                  value={values.units}
                   variant="outlined"
                   margin = "normal"
                 >
+                  <option  value= "" label = "select units"/>
                   {units.map((option) => (
                     <option
                       key={option.value}
@@ -266,9 +289,9 @@ const AddResourceView = () => {
                 />
                 <TextField
                   fullWidth
-                  label="Select Type"
                   name="type"
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   required
                   select
                   SelectProps={{ native: true}}
@@ -276,6 +299,7 @@ const AddResourceView = () => {
                   variant="outlined"
                   margin = "normal"
                 >
+                  <option  value= "" label = "select type"/>
                   {types.map((option) => (
                     <option
                       key={option.value}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useState, useEffect} from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
@@ -29,14 +29,31 @@ const useStyles = makeStyles((theme) => ({
 const InwardView = () => {
   const classes = useStyles();
   const navigate = useNavigate();
-  const resources = [
-    { 'value': 'dummy1', 'label': 'DUMMY1' },
-    { 'value': 'dummy2', 'label': 'DUMMY2' },
-];
-    const people = [
-    { 'value': 'dummy1', 'label': 'DUMMY1' },
-    { 'value': 'dummy2', 'label': 'DUMMY2' },
-];
+//   const resources = [
+//     { 'value': 'dummy1', 'label': 'DUMMY1' },
+//     { 'value': 'dummy2', 'label': 'DUMMY2' },
+// ];
+//     const people = [
+//     { 'value': 'dummy1', 'label': 'DUMMY1' },
+//     { 'value': 'dummy2', 'label': 'DUMMY2' },
+// ];
+  const [allResources, setAllResources] = useState([]);
+  const [allPersons, setAllPersons] = useState([]);
+  useEffect(()=>{
+    fetch('http://localhost:5000/getAllResources',{
+    }).then(res=>res.json())
+    .then(result=>{
+        setAllResources(result.resources)
+    })
+  },[])
+  console.log("resurces", allResources);
+  useEffect(()=>{
+    fetch('http://localhost:5000/getAllPersons',{
+    }).then(res=>res.json())
+    .then(result=>{
+        setAllPersons(result.persons);
+    })
+  },[])
   return (
     <Page
       className={classes.root}
@@ -52,7 +69,7 @@ const InwardView = () => {
           <Formik
             initialValues={{
               resource: '',
-              sourcedby: '',
+              sourcedBy: '',
               quantity: '',
               price: '',
               date: '',
@@ -61,7 +78,7 @@ const InwardView = () => {
             validationSchema={
               Yup.object().shape({
                 resource: Yup.string().max(255).required('Resource is required'),
-                sourcedby: Yup.string().max(255).required('Sourced By is required'),
+                sourcedBy: Yup.string().max(255).required('Sourced By is required'),
                 quantity: Yup.string().max(255).required('Quantity is required'),
                 price: Yup.string().max(255).required('Price is required'),
                 date: Yup.string().max(255).required('Date is required'),
@@ -69,8 +86,26 @@ const InwardView = () => {
                
               })
             }
-            onSubmit={() => {
-              navigate('/app/dashboard', { replace: true });
+            onSubmit = {(values, {setSubmitting, resetForm}) => {
+              console.log("values = ", values);
+              setTimeout(() => {
+                fetch('http://localhost:5000/addInward', {
+                  method: 'POST',
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({values})
+                })
+                .then((res) => {
+                  if(res.ok){
+                    alert("Inward Successfully Added");
+                  }else{
+                    alert("There was an errror");
+                  }
+                  
+                  setSubmitting(false);
+                  resetForm({})
+                })
+                .catch(() => alert("There was a error, Please try again"))
+              }, 1000);
             }}
           >
             {({
@@ -100,16 +135,16 @@ const InwardView = () => {
                     xs={12}
                   >
                   <Box my={2}>
-                  <Button
-                    color="primary"
-                    disabled={isSubmitting}
-                    fullWidth
-                    size="large"
-                    type="submit"
-                    variant="contained"
-                  >
-                    ADD RESOURCE
-                  </Button>
+                  <RouterLink to = "/app/addResource">
+                    <Button
+                      color="primary"
+                      fullWidth
+                      size="large"
+                      variant="contained"
+                    >
+                      ADD RESOURCE
+                    </Button>
+                  </RouterLink>
                 </Box>
                 </Grid>
                 <Grid
@@ -118,16 +153,16 @@ const InwardView = () => {
                     xs={12}
                   >
                 <Box my={2}>
-                  <Button
-                    color="primary"
-                    disabled={isSubmitting}
-                    fullWidth
-                    size="large"
-                    type="submit"
-                    variant="contained"
-                  >
-                    ADD PERSON
-                  </Button>
+                <RouterLink to = "/app/addPerson">
+                    <Button
+                      color="primary"
+                      fullWidth
+                      size="large"
+                      variant="contained"
+                    >
+                      ADD PERSON
+                    </Button>
+                  </RouterLink>
                 </Box>
                 </Grid>
                 </Grid>
@@ -195,53 +230,55 @@ const InwardView = () => {
                
                 <TextField
                   fullWidth
-                  label="Sourced By"
-                  name="sourcedby"
+                  name="sourcedBy"
                   onChange={handleChange}
                   required
                   select
                   SelectProps={{ native: true}}
-                  value={values.type}
+                  value={values.sourcedBy}
                   variant="outlined"
                   margin = "normal"
                 >
-                  {people.map((option) => (
+                  <option  value= "" label = "Sourced By"/>
+                  {allPersons.map((option) => (
                     <option
-                      key={option.value}
-                      value={option.value}
+                      key={option.first_name}
+                      value={option.first_name}
                     >
-                      {option.label}
+                      {option.first_name}
                     </option>
                   ))}
                 </TextField>
                 <TextField
                   fullWidth
-                  label="Resource"
                   name="resource"
                   onChange={handleChange}
                   required
                   select
                   SelectProps={{ native: true}}
-                  value={values.type}
+                  value={values.resource}
                   variant="outlined"
                   margin = "normal"
                 >
-                  {resources.map((option) => (
+                  <option  value= "" label = "select resource"/>
+                  {allResources.map((option) => (
                     <option
-                      key={option.value}
-                      value={option.value}
+                      key={option.identifier}
+                      value={option.identifier}
                     >
-                      {option.label}
+                      {option.identifier}
                     </option>
                   ))}
                 </TextField>
                 <TextField
+                      multiline
                       error={Boolean(touched.comments && errors.comments)}
                       fullWidth
+                      rows = {3}
                       helperText={touched.comments && errors.comments}
                       label="comments"
                       margin="normal"
-                      name="Comments"
+                      name="comments"
                       onBlur={handleBlur}
                       onChange={handleChange}
                       value={values.comments}

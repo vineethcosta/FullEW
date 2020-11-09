@@ -64,7 +64,7 @@ const AddPersonView = () => {
                 phone: Yup.string().max(255).required('Phone Number is required'),
                 address: Yup.string().max(255).required('Address is required'),
                 policy: Yup.boolean().oneOf([true], 'This field must be checked'),
-                organization: Yup.string().max(255).required('Address is required'),
+                organization: Yup.string().max(255).required('Organization is required'),
                 jobTitle: Yup.string().max(255).required('Address is required'),
               })
             }
@@ -82,7 +82,6 @@ const AddPersonView = () => {
                 })
                 .catch(() => alert("There was a error, Please try again"))
               }, 1000);
-                // navigate('/app/dashboard', { replace: true });
             }}
           >
             {({
