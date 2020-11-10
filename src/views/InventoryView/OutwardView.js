@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useState, useEffect} from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
@@ -29,14 +29,22 @@ const useStyles = makeStyles((theme) => ({
 const OutwardView = () => {
   const classes = useStyles();
   const navigate = useNavigate();
-  const resources = [
-    { 'value': 'dummy1', 'label': 'DUMMY1' },
-    { 'value': 'dummy2', 'label': 'DUMMY2' },
-];
-    const people = [
-    { 'value': 'dummy1', 'label': 'DUMMY1' },
-    { 'value': 'dummy2', 'label': 'DUMMY2' },
-];
+  const [allResources, setAllResources] = useState([]);
+  const [allPersons, setAllPersons] = useState([]);
+  useEffect(()=>{
+  fetch('http://localhost:5000/getAllResources',{
+  }).then(res=>res.json())
+  .then(result=>{
+      setAllResources(result.resources)
+  })
+  },[]);
+  useEffect(()=>{
+  fetch('http://localhost:5000/getAllPersons',{
+  }).then(res=>res.json())
+  .then(result=>{
+      setAllPersons(result.persons)
+  })
+  },[])
   return (
     <Page
       className={classes.root}
@@ -54,10 +62,12 @@ const OutwardView = () => {
               resource: '',
               requestedBy: '',
               transportedBy: '',
+              contractor: '',
               quantity: '',
               toLocation: '',
               comments: '',
-              date: ''
+              date: '',
+              vehicleNo: ''
             }}
             validationSchema={
               Yup.object().shape({
@@ -67,12 +77,31 @@ const OutwardView = () => {
                 quantity: Yup.string().max(255).required('Quantity is required'),
                 toLocation: Yup.string().max(255).required('Location is required'),
                 date: Yup.string().max(255).required('Date is required'),
-                comments: Yup.string().max(255).required('Comments are required')
-               
+                comments: Yup.string().max(255).required('Comments are required'),
+                contractor: Yup.string().max(255).required('Contractor are required'),
+                vehicleNo: Yup.string().max(255).required('vehicle no are required')
               })
             }
-            onSubmit={() => {
-              navigate('/app/dashboard', { replace: true });
+            onSubmit = {(values, {setSubmitting, resetForm}) => {
+              console.log("values = ", values);
+              setTimeout(() => {
+                fetch('http://localhost:5000/addOutward', {
+                  method: 'POST',
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({values})
+                })
+                .then((res) => {
+                  if(res.ok){
+                    alert("Outward Successfully Added");
+                  }else{
+                    alert("There was an errror");
+                  }
+                  
+                  setSubmitting(false);
+                  resetForm({})
+                })
+                .catch(() => alert("There was a error, Please try again"))
+              }, 1000);
             }}
           >
             {({
@@ -149,6 +178,7 @@ const OutwardView = () => {
                       fullWidth
                       helperText={touched.quantity && errors.quantity}
                       label="Quantity"
+                      type = "number"
                       margin="normal"
                       name="quantity"
                       onBlur={handleBlur}
@@ -194,12 +224,23 @@ const OutwardView = () => {
                     />
                 </Grid>
                 </Grid>
-               
+                <TextField
+                      error={Boolean(touched.date && errors.date)}
+                      fullWidth
+                      helperText={touched.date && errors.date}
+                      margin="normal"
+                      label="vehicle number"
+                      name="vehicleNo"
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      value={values.vehicleNo}
+                      variant="outlined"
+                    />
                 <TextField
                   fullWidth
-                  label="Requested By"
                   name="requestedBy"
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   required
                   select
                   SelectProps={{ native: true}}
@@ -207,20 +248,21 @@ const OutwardView = () => {
                   variant="outlined"
                   margin = "normal"
                 >
-                  {people.map((option) => (
+                  <option  value= "" label = "requested by"/>
+                  {allPersons.map((option) => (
                     <option
-                      key={option.value}
-                      value={option.value}
+                      key={option.first_name + "-" + option.last_name}
+                      value={option.first_name + "-" + option.last_name}
                     >
-                      {option.label}
+                      {option.first_name + "-" + option.last_name}
                     </option>
                   ))}
                 </TextField>
                 <TextField
                   fullWidth
-                  label="Transported By"
                   name="transportedBy"
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   required
                   select
                   SelectProps={{ native: true}}
@@ -228,18 +270,40 @@ const OutwardView = () => {
                   variant="outlined"
                   margin = "normal"
                 >
-                  {people.map((option) => (
+                  <option  value= "" label = "transported by"/>
+                  {allPersons.map((option) => (
                     <option
-                      key={option.value}
-                      value={option.value}
+                      key={option.first_name + "-" + option.last_name}
+                      value={option.first_name + "-" + option.last_name}
                     >
-                      {option.label}
+                      {option.first_name + "-" + option.last_name}
                     </option>
                   ))}
                 </TextField>
                 <TextField
                   fullWidth
-                  label="Resource"
+                  name="contractor"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  required
+                  select
+                  SelectProps={{ native: true}}
+                  value={values.contractor}
+                  variant="outlined"
+                  margin = "normal"
+                >
+                  <option  value= "" label = "contractor"/>
+                  {allPersons.map((option) => (
+                    <option
+                      key={option.first_name + "-" + option.last_name}
+                      value={option.first_name + "-" + option.last_name}
+                    >
+                      {option.first_name + "-" + option.last_name}
+                    </option>
+                  ))}
+                </TextField>
+                <TextField
+                  fullWidth
                   name="resource"
                   onChange={handleChange}
                   required
@@ -249,22 +313,25 @@ const OutwardView = () => {
                   variant="outlined"
                   margin = "normal"
                 >
-                  {resources.map((option) => (
+                  <option  value= "" label = "select resource"/>
+                  {allResources.map((option) => (
                     <option
-                      key={option.value}
-                      value={option.value}
+                      key={option.identifier}
+                      value={option.identifier}
                     >
-                      {option.label}
+                      {option.identifier}
                     </option>
                   ))}
                 </TextField>
                 <TextField
+                      multiline
+                      rows = {3}
                       error={Boolean(touched.comments && errors.comments)}
                       fullWidth
                       helperText={touched.comments && errors.comments}
                       label="comments"
                       margin="normal"
-                      name="Comments"
+                      name="comments"
                       onBlur={handleBlur}
                       onChange={handleChange}
                       value={values.comments}

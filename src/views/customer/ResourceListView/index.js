@@ -28,18 +28,18 @@ SortArrow: forwardRef((props, ref) => <ArrowUpward {...props} ref={ref} />)}
 const ResourceListView = ({ className, ...rest }) => {
 
   const [allResources, setAllResources] = useState([]);
-  var columns_array = [];
+  const [columns_array, setColsArray] = useState([]);
     useEffect(()=>{
       fetch('http://localhost:5000/getFullResources',{
       }).then(res=>res.json())
       .then(result=>{
+          console.log("result = " , result);
           var cols = Object.keys(result.resources[0])
-          cols = cols.filter(item => item !== "_id")
-          cols.map(x => {columns_array.push({"title" : x , field : x})})
+          cols.map(x => {columns_array.push({title : x , "field" : x})})
           console.log(columns_array)
           setAllResources(result.resources)
       })
-    },[null])
+    },[])
   return (
     <div className = "dashBoard" >
         <hr/>

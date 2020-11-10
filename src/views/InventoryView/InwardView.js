@@ -73,6 +73,7 @@ const InwardView = () => {
               quantity: '',
               price: '',
               date: '',
+              billNo: '',
               comments: ''
             }}
             validationSchema={
@@ -82,12 +83,12 @@ const InwardView = () => {
                 quantity: Yup.string().max(255).required('Quantity is required'),
                 price: Yup.string().max(255).required('Price is required'),
                 date: Yup.string().max(255).required('Date is required'),
-                comments: Yup.string().max(255).required('Comments are required')
+                comments: Yup.string().max(255).required('Comments are required'),
+                billNo: Yup.string().max(255).required('bill Number are required')
                
               })
             }
             onSubmit = {(values, {setSubmitting, resetForm}) => {
-              console.log("values = ", values);
               setTimeout(() => {
                 fetch('http://localhost:5000/addInward', {
                   method: 'POST',
@@ -227,7 +228,18 @@ const InwardView = () => {
                     />
                 </Grid>
                 </Grid>
-               
+                <TextField
+                  error={Boolean(touched.price && errors.price)}
+                  fullWidth
+                  helperText={touched.price && errors.price}
+                  label="Bill No"
+                  margin="normal"
+                  name="billNo"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  value={values.billNo}
+                  variant="outlined"
+                />
                 <TextField
                   fullWidth
                   name="sourcedBy"
