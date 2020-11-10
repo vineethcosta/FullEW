@@ -1,180 +1,113 @@
-import React, { useState } from 'react';
-import clsx from 'clsx';
-import moment from 'moment';
-import { v4 as uuid } from 'uuid';
-import PerfectScrollbar from 'react-perfect-scrollbar';
+import React, { useState , useEffect, forwardRef} from 'react';
+import FirstPage from '@material-ui/icons/FirstPage';
+import LastPage from '@material-ui/icons/LastPage';
+import ChevronLeft from '@material-ui/icons/ChevronLeft';
+import ChevronRight from '@material-ui/icons/ChevronRight';
+import Search from '@material-ui/icons/Search';
+import FilterList from '@material-ui/icons/FilterList';
+import MaterialTable from 'material-table';
+import Clear from '@material-ui/icons/Clear';
 import PropTypes from 'prop-types';
 import {
-  Box,
-  Button,
-  Card,
-  CardHeader,
-  Chip,
-  Divider,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  TableSortLabel,
-  Tooltip,
-  makeStyles
+  SvgIcon
 } from '@material-ui/core';
-import ArrowRightIcon from '@material-ui/icons/ArrowRight';
+import { Search as SearchIcon } from 'react-feather';
 
-const data = [
-  {
-    id: uuid(),
-    ref: 'CDD1049',
-    amount: 30.5,
-    customer: {
-      name: 'Ekaterina Tankova'
-    },
-    createdAt: 1555016400000,
-    status: 'pending'
-  },
-  {
-    id: uuid(),
-    ref: 'CDD1048',
-    amount: 25.1,
-    customer: {
-      name: 'Cao Yu'
-    },
-    createdAt: 1555016400000,
-    status: 'delivered'
-  },
-  {
-    id: uuid(),
-    ref: 'CDD1047',
-    amount: 10.99,
-    customer: {
-      name: 'Alexa Richardson'
-    },
-    createdAt: 1554930000000,
-    status: 'refunded'
-  },
-  {
-    id: uuid(),
-    ref: 'CDD1046',
-    amount: 96.43,
-    customer: {
-      name: 'Anje Keizer'
-    },
-    createdAt: 1554757200000,
-    status: 'pending'
-  },
-  {
-    id: uuid(),
-    ref: 'CDD1045',
-    amount: 32.54,
-    customer: {
-      name: 'Clarke Gillebert'
-    },
-    createdAt: 1554670800000,
-    status: 'delivered'
-  },
-  {
-    id: uuid(),
-    ref: 'CDD1044',
-    amount: 16.76,
-    customer: {
-      name: 'Adam Denisov'
-    },
-    createdAt: 1554670800000,
-    status: 'delivered'
-  }
-];
 
-const useStyles = makeStyles(() => ({
-  root: {},
-  actions: {
-    justifyContent: 'flex-end'
-  }
-}));
+const tableIcons = 
+{FirstPage: forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
+LastPage: forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
+NextPage: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
+PreviousPage: forwardRef((props, ref) => <ChevronLeft {...props} ref={ref} />),
+Filter: forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
+Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
+ResetSearch: forwardRef((props, ref) => <Clear {...props} ref={ref} />)}
 
 const LatestOrders = ({ className, ...rest }) => {
-  const classes = useStyles();
-  const [orders] = useState(data);
+
+  const [inwardData, setInwardData] = useState([]);
+  const [outwardData, setOutwardData] = useState([]);
+
+  useEffect( ()=>{
+    fetch('http://localhost:5000/getInward',{
+    }).then(res=>res.json())
+    .then(result=>{
+        setInwardData(result.inward)
+    });  
+  },[null])
+
+  useEffect( ()=>{
+    fetch('http://localhost:5000/getOutward',{
+    }).then(res=>res.json())
+    .then(result=>{
+        setOutwardData(inwardData.concat(result.outward))
+    });  
+  },[null])
+
+  var columns_array = [];
+  if(inwardData.length > 0 || outwardData.length > 0){
+    columns_array = []
+    for(var i=0;i<outwardData.length;i++){
+      inwardData.push(outwardData[i])
+    }
+    console.log("inwarddata = ",inwardData)
+    var keys1, keys2;
+    if(inwardData.length>0){
+       keys1 = Object.keys(inwardData[0])
+    }
+    if(outwardData.length>0){
+      keys2 = Object.keys(outwardData[0])
+    }
+    
+    for(var i in keys2)
+    {
+      
+      if(keys1.includes(keys2[i]))
+      {
+          continue
+      }
+      else{
+        keys1.push(keys2[i])
+      }
+      
+    }
+    console.log("check"+keys1)
+    keys1.map(x => {columns_array.push({"title" : x , field : x})})
+  }
+
+
+
 
   return (
-    <Card
-      className={clsx(classes.root, className)}
-      {...rest}
-    >
-      <CardHeader title="Latest Orders" />
-      <Divider />
-      <PerfectScrollbar>
-        <Box minWidth={800}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>
-                  Order Ref
-                </TableCell>
-                <TableCell>
-                  Customer
-                </TableCell>
-                <TableCell sortDirection="desc">
-                  <Tooltip
-                    enterDelay={300}
-                    title="Sort"
-                  >
-                    <TableSortLabel
-                      active
-                      direction="desc"
-                    >
-                      Date
-                    </TableSortLabel>
-                  </Tooltip>
-                </TableCell>
-                <TableCell>
-                  Status
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {orders.map((order) => (
-                <TableRow
-                  hover
-                  key={order.id}
-                >
-                  <TableCell>
-                    {order.ref}
-                  </TableCell>
-                  <TableCell>
-                    {order.customer.name}
-                  </TableCell>
-                  <TableCell>
-                    {moment(order.createdAt).format('DD/MM/YYYY')}
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      color="primary"
-                      label={order.status}
-                      size="small"
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </Box>
-      </PerfectScrollbar>
-      <Box
-        display="flex"
-        justifyContent="flex-end"
-        p={2}
-      >
-        <Button
-          color="primary"
-          endIcon={<ArrowRightIcon />}
-          size="small"
-          variant="text"
+    <div className = "dashBoard" >
+        <hr/>
+      <MaterialTable
+        title="Inward/Outward"
+         columns = {columns_array}
+         icons={{ Filter: () =>   <SvgIcon
+          fontSize="small"
+          color="action"
         >
-          View all
-        </Button>
-      </Box>
-    </Card>
+          <SearchIcon />
+        </SvgIcon> }}
+        data={inwardData.map(item => Object.assign({}, item))} 
+        icons = {tableIcons}       
+        options={{
+          filtering: true,
+          sorting: true,
+          pageSize: 5,
+          paginationType: "stepped",
+          rowStyle: rowData => {
+            if (rowData.type === 'Inward') {
+              return { backgroundColor: '#ddfada ' };
+            } else if (rowData.type === 'Outward') {
+              return { backgroundColor: '#ffe2e2' };
+            }
+          }
+        }}
+       
+      />
+      </div>
   );
 };
 
