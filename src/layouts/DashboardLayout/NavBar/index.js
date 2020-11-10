@@ -30,7 +30,7 @@ const items = [
   {
     href: '/app/dashboard',
     icon: BarChartIcon,
-    title: 'Dashboard'
+    title: 'DASHBOARD'
   },
   {
     href: '/app/addPerson',

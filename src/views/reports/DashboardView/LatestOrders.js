@@ -8,6 +8,7 @@ import FilterList from '@material-ui/icons/FilterList';
 import MaterialTable from 'material-table';
 import Clear from '@material-ui/icons/Clear';
 import PropTypes from 'prop-types';
+import ArrowUpward from '@material-ui/icons/ArrowUpward';
 import {
   SvgIcon
 } from '@material-ui/core';
@@ -21,7 +22,8 @@ NextPage: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
 PreviousPage: forwardRef((props, ref) => <ChevronLeft {...props} ref={ref} />),
 Filter: forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
 Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
-ResetSearch: forwardRef((props, ref) => <Clear {...props} ref={ref} />)}
+ResetSearch: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
+SortArrow: forwardRef((props, ref) => <ArrowUpward {...props} ref={ref} />)}
 
 const LatestOrders = ({ className, ...rest }) => {
 
@@ -83,13 +85,7 @@ const LatestOrders = ({ className, ...rest }) => {
         <hr/>
       <MaterialTable
         title="Inward/Outward"
-         columns = {columns_array}
-         icons={{ Filter: () =>   <SvgIcon
-          fontSize="small"
-          color="action"
-        >
-          <SearchIcon />
-        </SvgIcon> }}
+        columns = {columns_array}
         data={inwardData.map(item => Object.assign({}, item))} 
         icons = {tableIcons}       
         options={{
