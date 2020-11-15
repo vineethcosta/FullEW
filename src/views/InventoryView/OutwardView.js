@@ -309,7 +309,7 @@ const OutwardView = () => {
                   required
                   select
                   SelectProps={{ native: true}}
-                  value={values.type}
+                  value={values.resource}
                   variant="outlined"
                   margin = "normal"
                 >

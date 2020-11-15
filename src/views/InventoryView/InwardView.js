@@ -199,6 +199,7 @@ const InwardView = () => {
                 <TextField
                       error={Boolean(touched.price && errors.price)}
                       fullWidth
+                      type = "Number"
                       helperText={touched.price && errors.price}
                       label="Price"
                       margin="normal"
